@@ -1,0 +1,18 @@
+# Force the system to process any unclassified raw data into the wiki and vector store
+uv run secondself process
+
+# Ask a test question to verify the RAG (Retrieval-Augmented Generation) pipeline
+uv run secondself ask "What are the main topics in my notes?"
+
+
+# See all your captured data
+uv run secondself list
+
+# Inspect a specific piece of captured data (replace <id> with the actual ID)
+uv run secondself show <id>
+
+# Run a search to test if your embeddings and vector search are working properly
+uv run secondself search "your test query"
+
+
+uv run secondself ask "who is ashish kumar verma?"
