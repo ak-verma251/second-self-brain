@@ -7,15 +7,40 @@ All shared paths, constants, and settings used across the application.
 import os
 from pathlib import Path
 
+
 # ─── Paths ───────────────────────────────────────────────────────────
-# PROJECT_ROOT resolves to the top-level project directory.
-# __file__ is src/secondself/config.py → .parent.parent.parent = project root
-# The SECONDSELF_ROOT env-var allows cloud deployments (e.g. Streamlit Cloud)
-# to override the root when the file layout differs from local development.
-PROJECT_ROOT = Path(os.environ.get(
-    "SECONDSELF_ROOT",
-    Path(__file__).resolve().parent.parent.parent,
-))
+
+def _resolve_project_root() -> Path:
+    """Find the project root directory.
+
+    Resolution order:
+      1. SECONDSELF_ROOT env-var (explicit override for any deployment).
+      2. __file__-based: works when running from the source tree
+         (i.e. ``src/secondself/config.py`` → parent×3 = project root).
+      3. CWD fallback: on Streamlit Cloud the package is pip-installed
+         into site-packages, so __file__ is NOT in the source tree.
+         Streamlit Cloud sets CWD to the cloned repo root, so CWD works.
+    """
+    # 1. Explicit env-var
+    env_root = os.environ.get("SECONDSELF_ROOT")
+    if env_root:
+        return Path(env_root)
+
+    # 2. __file__-based (local dev: src/secondself/config.py → ../../..)
+    file_root = Path(__file__).resolve().parent.parent.parent
+    if (file_root / "src" / "secondself").is_dir():
+        return file_root
+
+    # 3. CWD fallback (Streamlit Cloud: CWD = /mount/src/<repo>/)
+    cwd = Path.cwd()
+    if (cwd / "src" / "secondself").is_dir() or (cwd / "raw").is_dir():
+        return cwd
+
+    # Last resort: use __file__-based even if it doesn't look right
+    return file_root
+
+
+PROJECT_ROOT = _resolve_project_root()
 
 RAW_DIR = PROJECT_ROOT / "raw"
 WIKI_DIR = PROJECT_ROOT / "wiki"
@@ -47,7 +72,11 @@ PORT = 8000
 
 
 def ensure_dirs() -> None:
-    """Create all required directories if they don't exist."""
+    """Create all required directories if they don't exist.
+
+    Silently skips directories that can't be created (e.g. on read-only
+    filesystems in cloud deployments).
+    """
     dirs = [
         RAW_DIR,
         DATA_DIR,
@@ -59,8 +88,12 @@ def ensure_dirs() -> None:
         dirs.append(WIKI_DIR / category)
 
     for d in dirs:
-        d.mkdir(parents=True, exist_ok=True)
+        try:
+            d.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass  # Read-only filesystem — skip gracefully
 
 
 # Auto-create directories on first import
 ensure_dirs()
+
