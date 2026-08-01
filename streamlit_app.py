@@ -414,7 +414,7 @@ with col_left:
         ag_edges = [Edge(source=e["from"], target=e["to"], color="rgba(148,163,184,0.2)", width=1.5) for e in edges_data]
         config = Config(width="100%", height=500, directed=False, physics={"barnesHut": {"gravitationalConstant": -3000, "springLength": 120, "springConstant": 0.04}}, nodeHighlightBehavior=True, highlightColor="#6C5CE7")
         
-        selected = agraph(nodes=ag_nodes, edges=ag_edges, config=config, key=f"graph_{st.session_state.get('graph_trigger', 0)}")
+        selected = agraph(nodes=ag_nodes, edges=ag_edges, config=config)
         if selected: st.session_state["selected_node_id"] = selected
             
         cats = {"projects": 0, "areas": 0, "resources": 0, "archives": 0}
