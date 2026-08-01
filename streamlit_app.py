@@ -354,8 +354,8 @@ st.markdown("""
 # ═══════════════════════════════════════════════════════════════════════════════
 
 with st.sidebar:
-    st.markdown('<p class="main-title">🧠 SecondSelf</p>', unsafe_allow_html=True)
-    st.markdown('<p class="subtitle">Your AI Second Brain</p>', unsafe_allow_html=True)
+    st.markdown('<p class="main-title">🧠 ASHISH BRAIN</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subtitle">APNA SAATHI </p>', unsafe_allow_html=True)
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
     page = st.radio(
@@ -383,8 +383,8 @@ with st.sidebar:
 #  PAGE: KNOWLEDGE GRAPH
 # ═══════════════════════════════════════════════════════════════════════════════
 
-if page == "🧠 Knowledge Graph":
-    st.markdown("## 🧠 Knowledge Graph")
+if page == "🧠 GYAN KA DUKAN":
+    st.markdown("## 🧠 GYAN KA DUKAN")
     st.markdown(
         '<p class="subtitle">Explore your interconnected knowledge — '
         "click any node to see its content.</p>",
