@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx
+import pymupdf
 from rich.console import Console
 
 from secondself.config import RAW_DIR
@@ -213,8 +214,6 @@ def capture_file(file_path: str) -> dict:
     elif suffix == ".pdf":
         # Extract text from PDF using pymupdf
         try:
-            import pymupdf
-
             doc = pymupdf.open(str(path))
             pages = []
             # Limit to first 50 pages for large PDFs

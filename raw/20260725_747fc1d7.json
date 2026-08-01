@@ -1,0 +1,16 @@
+{
+  "id": "747fc1d7-7140-46c7-81df-cc6a4a5926d0",
+  "timestamp": "2026-07-25T14:50:36.968702+05:30",
+  "type": "url",
+  "source": "cli",
+  "content": {
+    "text": "https://www.wikipedia.org - Search",
+    "url": "https://www.bing.com/search?q=https%3A%2F%2Fwww.wikipedia.org&form=IPRV10"
+  },
+  "metadata": {
+    "title": "https://www.wikipedia.org - Search",
+    "word_count": 3,
+    "char_count": 34,
+    "fetch_failed": false
+  }
+}

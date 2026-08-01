@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="SecondSelf — Your AI-powered personal knowledge graph. Ask anything about your notes, explore connections, and capture new ideas instantly.">
+
+    <title>SecondSelf — Your AI Second Brain</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- ═══════════════════════════════════════════════════
+         HEADER
+         ═══════════════════════════════════════════════════ -->
+    <header id="app-header" role="banner">
+        <div class="logo" aria-label="SecondSelf">
+            <span class="logo-icon" aria-hidden="true">🧠</span>
+            <span class="logo-text">ASHISH'S BRaIN</span>
+        </div>
+
+        <nav class="header-nav" aria-label="Main actions">
+            <!-- Stats pill — populated by JS from /api/stats -->
+            <div id="stats-pill" class="stats-pill" title="Knowledge base stats" aria-live="polite">
+                <span class="stats-item" id="stat-notes">
+                    <span class="stats-icon">◈</span>
+                    <span id="stat-notes-count">—</span> notes
+                </span>
+                <span class="stats-divider">·</span>
+                <span class="stats-item" id="stat-embedded">
+                    <span class="stats-icon">⚡</span>
+                    <span id="stat-embedded-count">—</span> embedded
+                </span>
+            </div>
+
+            <!-- Keyboard hint -->
+            <kbd class="kbd-hint" title="Press / to focus the ask bar">/</kbd>
+
+            <!-- Capture button -->
+            <button id="btn-capture" class="btn primary" aria-label="Capture a new note or URL">
+                <span aria-hidden="true">✦</span> Capture
+            </button>
+        </nav>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════
+         MAIN — SPLIT PANE  (graph ← → note panel)
+         ═══════════════════════════════════════════════════ -->
+    <main id="main-content" role="main">
+
+        <!-- Left: graph canvas -->
+        <section id="graph-section" aria-label="Knowledge graph">
+            <div id="graph-container">
+                <!-- vis-network canvas injected here by graph.js -->
+
+                <!-- Empty state — shown when wiki has no notes yet -->
+                <div id="graph-empty-state" class="hidden" role="status" aria-label="Empty knowledge base">
+                    <div class="empty-state-icon">🌱</div>
+                    <h2 class="empty-state-heading">Your second brain is empty</h2>
+                    <p class="empty-state-body">
+                        Capture your first note, URL, or document to begin building<br>
+                        your personal knowledge graph.
+                    </p>
+                    <button class="btn primary empty-state-cta" id="btn-empty-capture">
+                        ✦ Capture Your First Note
+                    </button>
+                    <p class="empty-state-hint">
+                        Or run <code>uv run secondself process</code> in your terminal<br>
+                        to import notes from <code>raw/</code>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Stats dashboard bar — shown below graph -->
+            <div id="stats-bar" class="stats-bar" role="complementary" aria-label="Knowledge base statistics">
+                <div class="stats-bar-inner">
+                    <div class="stat-card" id="sc-projects">
+                        <span class="stat-card-count">—</span>
+                        <span class="stat-card-label">Projects</span>
+                        <span class="stat-card-dot" style="background:var(--accent-projects)"></span>
+                    </div>
+                    <div class="stat-card" id="sc-areas">
+                        <span class="stat-card-count">—</span>
+                        <span class="stat-card-label">Areas</span>
+                        <span class="stat-card-dot" style="background:var(--accent-areas)"></span>
+                    </div>
+                    <div class="stat-card" id="sc-resources">
+                        <span class="stat-card-count">—</span>
+                        <span class="stat-card-label">Resources</span>
+                        <span class="stat-card-dot" style="background:var(--accent-resources)"></span>
+                    </div>
+                    <div class="stat-card" id="sc-archives">
+                        <span class="stat-card-count">—</span>
+                        <span class="stat-card-label">Archives</span>
+                        <span class="stat-card-dot" style="background:var(--accent-archives)"></span>
+                    </div>
+                    <div class="stat-card stat-card-total" id="sc-total">
+                        <span class="stat-card-count">—</span>
+                        <span class="stat-card-label">Total</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right: Note detail panel -->
+        <aside id="note-panel" aria-label="Note details">
+            <div id="note-panel-content">
+                <!-- Empty / default state -->
+                <div id="note-panel-empty" class="note-panel-empty" aria-label="No note selected">
+                    <div class="note-panel-empty-icon">◎</div>
+                    <p class="note-panel-empty-text">
+                        Click a node in the graph<br>to explore its content.
+                    </p>
+                </div>
+
+                <!-- Note detail (hidden until a node is selected) -->
+                <div id="note-detail" class="hidden">
+                    <header class="note-header">
+                        <h2 id="note-title">—</h2>
+                        <div id="note-meta">
+                            <span id="note-category" class="badge hidden"></span>
+                            <div id="note-tags" class="tags-container"></div>
+                        </div>
+                    </header>
+
+                    <div class="note-body">
+                        <div id="note-content-preview"></div>
+                    </div>
+
+                    <div id="note-related-container" class="hidden">
+                        <h3 class="related-heading">Related Notes</h3>
+                        <ul id="note-related-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════
+         ASK BAR  (fixed bottom)
+         ═══════════════════════════════════════════════════ -->
+    <footer id="ask-bar" role="search" aria-label="Ask your knowledge base">
+        <!-- Answer appears above the input -->
+        <div id="answer-display" class="hidden" role="region" aria-label="Answer" aria-live="polite">
+            <!-- Populated dynamically by chat.js -->
+        </div>
+
+        <form id="ask-form" autocomplete="off" aria-label="Ask a question">
+            <label for="ask-input" class="sr-only">Ask your second brain</label>
+            <input type="text" id="ask-input" placeholder="Ask your second brain anything… (press / to focus)"
+                autocomplete="off" spellcheck="false" />
+            <button type="submit" id="btn-ask" class="btn ask-btn" aria-label="Ask">
+                <span class="ask-btn-icon" aria-hidden="true">→</span>
+                <span class="ask-btn-label">Ask</span>
+            </button>
+        </form>
+    </footer>
+
+    <!-- ═══════════════════════════════════════════════════
+         SCRIPTS
+         ═══════════════════════════════════════════════════ -->
+    <!-- vis-network (graph renderer) -->
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <!-- SecondSelf scripts — order matters: graph.js declares _network -->
+    <script src="graph.js"></script>
+    <script src="chat.js"></script>
+</body>
+
+</html>

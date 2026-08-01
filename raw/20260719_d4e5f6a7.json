@@ -1,0 +1,14 @@
+{
+  "id": "d4e5f6a7-zett-0004-0000-000000000004",
+  "timestamp": "2026-07-19T00:08:00+05:30",
+  "type": "note",
+  "source": "cli",
+  "content": {
+    "text": "Zettelkasten method: every note gets a unique ID and links to related notes forming an emergent knowledge graph"
+  },
+  "metadata": {
+    "title": "Zettelkasten method: every note gets a...",
+    "word_count": 19,
+    "char_count": 110
+  }
+}

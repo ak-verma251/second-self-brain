@@ -1,0 +1,352 @@
+{
+  "nodes": [
+    {
+      "id": "Second Brain Concept",
+      "label": "Second Brain Concept",
+      "category": "resources",
+      "tags": [],
+      "summary": "",
+      "content_preview": "",
+      "created": "",
+      "word_count": 0,
+      "link_count": 0
+    },
+    {
+      "id": "1503e987-af27-495a-b0cb-287653270137",
+      "label": "Career Goal: AI Engineer",
+      "category": "areas",
+      "tags": [
+        "career",
+        "goals",
+        "AI"
+      ],
+      "summary": "Aspiring to become an AI engineer",
+      "content_preview": "I'm Ashish ,want to become as AI engineer to make daily life as much as easier",
+      "created": "2026-07-16T00:35:52.621171+05:30",
+      "word_count": 16,
+      "link_count": 0
+    },
+    {
+      "id": "509de5df-0ec5-49f2-86af-b4f7dba83d18",
+      "label": "Ashish Kumar Verma",
+      "category": "resources",
+      "tags": [
+        "person",
+        "biography"
+      ],
+      "summary": "Information about Ashish Kumar Verma",
+      "content_preview": "Ashish Kumar Verma",
+      "created": "2026-07-15T14:20:51.351562+05:30",
+      "word_count": 3,
+      "link_count": 1
+    },
+    {
+      "id": "cc300003-2024-4b70-9de9-second-self03",
+      "label": "Building a Second Brain",
+      "category": "resources",
+      "tags": [
+        "personal knowledge management",
+        "productivity",
+        " PARA method"
+      ],
+      "summary": "Introduction to the PARA method and CODE technique for digital organization",
+      "content_preview": "https://www.buildingasecondbrain.com/\n\nBuilding a Second Brain: A Proven Method to Organize Your Digital Life and Unlock Your Creative\nPotential \u2014 Tiago Forte describes the CODE method (Capture, Organ...",
+      "created": "2026-07-24T08:20:00.000000+05:30",
+      "word_count": 62,
+      "link_count": 3
+    },
+    {
+      "id": "e5f6a7b8-deep-0005-0000-000000000005",
+      "label": "Deep Work by Cal Newport",
+      "category": "resources",
+      "tags": [
+        "productivity",
+        "deep work",
+        "focus"
+      ],
+      "summary": "Deep work concept by Cal Newport for distraction-free concentration",
+      "content_preview": "Deep work by Cal Newport: distraction-free concentration produces far more value than fragmented\nshallow work",
+      "created": "2026-07-19T00:08:30+05:30",
+      "word_count": 15,
+      "link_count": 1
+    },
+    {
+      "id": "a1b2c3d4-feyn-0001-0000-000000000001",
+      "label": "Feynman Technique for Learning",
+      "category": "resources",
+      "tags": [
+        "learning",
+        "productivity",
+        "Feynman Technique"
+      ],
+      "summary": "Technique to improve understanding by teaching concepts simply",
+      "content_preview": "The Feynman Technique: teach a concept in simple terms to expose gaps in your own understanding and\nfill them",
+      "created": "2026-07-19T00:06:37+05:30",
+      "word_count": 19,
+      "link_count": 0
+    },
+    {
+      "id": "58a6baa7-fa48-4419-ae9e-add1772e4139",
+      "label": "Hometown Details",
+      "category": "resources",
+      "tags": [
+        "personal",
+        "location",
+        "village"
+      ],
+      "summary": "Personal location information",
+      "content_preview": "I from Balrampur , and my village name is Chhangurdeeh ,",
+      "created": "2026-07-15T16:36:06.376215+05:30",
+      "word_count": 11,
+      "link_count": 0
+    },
+    {
+      "id": "e136e488-0ca1-48f8-baad-eb1ea7d64bac",
+      "label": "India's National Anthem",
+      "category": "resources",
+      "tags": [
+        "India",
+        "National Anthem",
+        "General Knowledge"
+      ],
+      "summary": "Information about India's national anthem",
+      "content_preview": "miss how can i help you \nthe national anthem of india is \"jan gan man \"",
+      "created": "2026-07-25T14:52:39.289110+05:30",
+      "word_count": 16,
+      "link_count": 1
+    },
+    {
+      "id": "f6a7b8c9-comp-0006-0000-000000000006",
+      "label": "PARA Method Overview",
+      "category": "resources",
+      "tags": [
+        "productivity",
+        "organization",
+        " PARA method"
+      ],
+      "summary": "Introduction to the PARA method for organizing digital information",
+      "content_preview": "https://fortelabs.com/blog/para/\n\nThe PARA Method: A Universal System for Organizing Digital Information \u2014 Forte Labs\n\nPARA stands for Projects, Areas, Resources, and Archives. It is a simple, univers...",
+      "created": "2026-07-19T00:09:00+05:30",
+      "word_count": 38,
+      "link_count": 1
+    },
+    {
+      "id": "aa100001-2024-4b70-9de9-second-self01",
+      "label": "Retrieval-Augmented Generation (RAG) Overview",
+      "category": "resources",
+      "tags": [
+        "RAG",
+        "LLM",
+        "vector database"
+      ],
+      "summary": "RAG combines a vector database with an LLM for improved Q&A",
+      "content_preview": "RAG (Retrieval-Augmented Generation) combines a vector database with an LLM. Instead of relying on\nthe model's parametric memory, RAG retrieves relevant documents at query time and injects them into\nt...",
+      "created": "2026-07-24T08:00:00.000000+05:30",
+      "word_count": 52,
+      "link_count": 1
+    },
+    {
+      "id": "c3d4e5f6-brai-0003-0000-000000000003",
+      "label": "Second Brain Concept",
+      "category": "resources",
+      "tags": [
+        "productivity",
+        "memory",
+        "cognitive function"
+      ],
+      "summary": "Externalising memory for creative thinking",
+      "content_preview": "Building a second brain means externalising memory so your mind is free for creative and deep\nthinking",
+      "created": "2026-07-19T00:07:30+05:30",
+      "word_count": 17,
+      "link_count": 2
+    },
+    {
+      "id": "931701ce-22e2-491d-b543-a1b9129a9f9a",
+      "label": "Second Self Brain Repository",
+      "category": "resources",
+      "tags": [
+        "github",
+        "repository",
+        "personal-knowledge-management"
+      ],
+      "summary": "GitHub repository for personal knowledge management",
+      "content_preview": "https://github.com/ak-verma251/second-self-brain.git\n\nak-verma251/second-self-brain \u00b7 GitHub\n\nContribute to ak-verma251/second-self-brain development by creating an account on GitHub.",
+      "created": "2026-07-15T14:36:12.372325+05:30",
+      "word_count": 14,
+      "link_count": 3
+    },
+    {
+      "id": "3031fc1c-f916-475c-8132-91b5dbf29028",
+      "label": "Second Self Brain Repository",
+      "category": "resources",
+      "tags": [
+        "github",
+        "repository",
+        "personal-knowledge-management"
+      ],
+      "summary": "GitHub repository for personal knowledge management",
+      "content_preview": "https://github.com/ak-verma251/second-self-brain.git\n\nGitHub - ak-verma251/second-self-brain \u00b7 GitHub\n\nContribute to ak-verma251/second-self-brain development by creating an account on GitHub.",
+      "created": "2026-07-16T00:36:49.604915+05:30",
+      "word_count": 16,
+      "link_count": 2
+    },
+    {
+      "id": "b2c3d4e5-spac-0002-0000-000000000002",
+      "label": "Spaced Repetition Technique",
+      "category": "resources",
+      "tags": [
+        "learning",
+        "memory",
+        "productivity"
+      ],
+      "summary": "Spaced repetition improves long-term memory retention",
+      "content_preview": "Spaced repetition: reviewing material at increasing intervals dramatically improves long-term memory\nretention",
+      "created": "2026-07-19T00:07:00+05:30",
+      "word_count": 12,
+      "link_count": 1
+    },
+    {
+      "id": "bb200002-2024-4b70-9de9-second-self02",
+      "label": "Vector Embeddings for Knowledge Base Search",
+      "category": "resources",
+      "tags": [
+        "vector embeddings",
+        "semantic search",
+        "sentence-transformers"
+      ],
+      "summary": "Vector embeddings for semantic search in a personal knowledge base",
+      "content_preview": "Vector embeddings are dense numerical representations of text where semantic similarity maps to\ngeometric proximity. The sentence-transformers library (all-MiniLM-L6-v2) produces 384-dimensional\nunit-...",
+      "created": "2026-07-24T08:10:00.000000+05:30",
+      "word_count": 49,
+      "link_count": 1
+    },
+    {
+      "id": "747fc1d7-7140-46c7-81df-cc6a4a5926d0",
+      "label": "Wikipedia Search Reference",
+      "category": "resources",
+      "tags": [
+        "wikipedia",
+        "search",
+        "reference"
+      ],
+      "summary": "Link to Wikipedia search result",
+      "content_preview": "https://www.bing.com/search?q=https%3A%2F%2Fwww.wikipedia.org&form=IPRV10\n\nhttps://www.wikipedia.org - Search",
+      "created": "2026-07-25T14:50:36.968702+05:30",
+      "word_count": 4,
+      "link_count": 1
+    },
+    {
+      "id": "6d9f420b-8dc9-4988-8c6e-9d6d6d167c6c",
+      "label": "Wikipedia Search Reference",
+      "category": "resources",
+      "tags": [
+        "wikipedia",
+        "search",
+        "reference"
+      ],
+      "summary": "Link to Wikipedia search result",
+      "content_preview": "https://www.bing.com/search?q=https%3A%2F%2Fwww.wikipedia.org&form=IPRV10\n\nhttps://www.wikipedia.org - Search",
+      "created": "2026-07-25T14:49:40.866582+05:30",
+      "word_count": 4,
+      "link_count": 0
+    },
+    {
+      "id": "d4e5f6a7-zett-0004-0000-000000000004",
+      "label": "Zettelkasten Method Overview",
+      "category": "resources",
+      "tags": [
+        "Zettelkasten",
+        "note-taking",
+        "knowledge management"
+      ],
+      "summary": "Description of the Zettelkasten note-taking method",
+      "content_preview": "Zettelkasten method: every note gets a unique ID and links to related notes forming an emergent\nknowledge graph",
+      "created": "2026-07-19T00:08:00+05:30",
+      "word_count": 18,
+      "link_count": 0
+    }
+  ],
+  "edges": [
+    {
+      "from": "509de5df-0ec5-49f2-86af-b4f7dba83d18",
+      "to": "e136e488-0ca1-48f8-baad-eb1ea7d64bac"
+    },
+    {
+      "from": "cc300003-2024-4b70-9de9-second-self03",
+      "to": "3031fc1c-f916-475c-8132-91b5dbf29028"
+    },
+    {
+      "from": "cc300003-2024-4b70-9de9-second-self03",
+      "to": "c3d4e5f6-brai-0003-0000-000000000003"
+    },
+    {
+      "from": "cc300003-2024-4b70-9de9-second-self03",
+      "to": "f6a7b8c9-comp-0006-0000-000000000006"
+    },
+    {
+      "from": "e5f6a7b8-deep-0005-0000-000000000005",
+      "to": "b2c3d4e5-spac-0002-0000-000000000002"
+    },
+    {
+      "from": "e136e488-0ca1-48f8-baad-eb1ea7d64bac",
+      "to": "509de5df-0ec5-49f2-86af-b4f7dba83d18"
+    },
+    {
+      "from": "f6a7b8c9-comp-0006-0000-000000000006",
+      "to": "cc300003-2024-4b70-9de9-second-self03"
+    },
+    {
+      "from": "aa100001-2024-4b70-9de9-second-self01",
+      "to": "bb200002-2024-4b70-9de9-second-self02"
+    },
+    {
+      "from": "c3d4e5f6-brai-0003-0000-000000000003",
+      "to": "3031fc1c-f916-475c-8132-91b5dbf29028"
+    },
+    {
+      "from": "c3d4e5f6-brai-0003-0000-000000000003",
+      "to": "cc300003-2024-4b70-9de9-second-self03"
+    },
+    {
+      "from": "931701ce-22e2-491d-b543-a1b9129a9f9a",
+      "to": "3031fc1c-f916-475c-8132-91b5dbf29028"
+    },
+    {
+      "from": "931701ce-22e2-491d-b543-a1b9129a9f9a",
+      "to": "c3d4e5f6-brai-0003-0000-000000000003"
+    },
+    {
+      "from": "931701ce-22e2-491d-b543-a1b9129a9f9a",
+      "to": "cc300003-2024-4b70-9de9-second-self03"
+    },
+    {
+      "from": "3031fc1c-f916-475c-8132-91b5dbf29028",
+      "to": "c3d4e5f6-brai-0003-0000-000000000003"
+    },
+    {
+      "from": "3031fc1c-f916-475c-8132-91b5dbf29028",
+      "to": "cc300003-2024-4b70-9de9-second-self03"
+    },
+    {
+      "from": "b2c3d4e5-spac-0002-0000-000000000002",
+      "to": "e5f6a7b8-deep-0005-0000-000000000005"
+    },
+    {
+      "from": "bb200002-2024-4b70-9de9-second-self02",
+      "to": "aa100001-2024-4b70-9de9-second-self01"
+    },
+    {
+      "from": "747fc1d7-7140-46c7-81df-cc6a4a5926d0",
+      "to": "6d9f420b-8dc9-4988-8c6e-9d6d6d167c6c"
+    }
+  ],
+  "metadata": {
+    "total_nodes": 18,
+    "total_edges": 18,
+    "category_counts": {
+      "resources": 17,
+      "areas": 1
+    },
+    "generated_at": "2026-07-30T04:39:51.775097+00:00"
+  }
+}

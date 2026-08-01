@@ -1,0 +1,202 @@
+{
+  "main": {
+    "id": "6da4f789dd27ba15",
+    "type": "split",
+    "children": [
+      {
+        "id": "71fac0201eaf6ded",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "74f7e02857e6514d",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "c1121058c056238d",
+    "type": "split",
+    "children": [
+      {
+        "id": "4b794c339a543d85",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "78f447d2c949feb8",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "2be205075fab224e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "2ea09d378003f077",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "edbac4c5a147b5fc",
+    "type": "split",
+    "children": [
+      {
+        "id": "c79a64174a87e281",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5f0808ee91c1372f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "cbbbe81d5e3b0d30",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "c1dcbf8f10b1bbb2",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "97527665e214df28",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "c442bd4debaf0e12",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "74f7e02857e6514d",
+  "lastOpenFiles": [
+    "resources/indias-national-anthem.md",
+    "resources/wikipedia-search-reference-2.md",
+    "resources/wikipedia-search-reference.md",
+    "Second Brain Concept.md",
+    "resources/spaced-repetition-technique.md",
+    "resources/deep-work-by-cal-newport.md",
+    "Untitled.canvas",
+    "resources/building-a-second-brain.md",
+    "resources/untitled-note.md",
+    "resources/ashish-kumar-verma.md",
+    "resources/second-self-brain-repository-2.md",
+    "resources/hometown-details.md",
+    "areas/career-goal-ai-engineer.md",
+    "resources/second-self-brain-repository.md",
+    "resources/feynman-technique-for-learning.md",
+    "resources/second-brain-concept.md",
+    "resources/zettelkasten-method-overview.md",
+    "resources/para-method-overview.md",
+    "resources/retrieval-augmented-generation-rag-overview.md",
+    "resources/vector-embeddings-for-knowledge-base-search.md"
+  ]
+}

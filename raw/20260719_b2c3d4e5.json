@@ -1,0 +1,14 @@
+{
+  "id": "b2c3d4e5-spac-0002-0000-000000000002",
+  "timestamp": "2026-07-19T00:07:00+05:30",
+  "type": "note",
+  "source": "cli",
+  "content": {
+    "text": "Spaced repetition: reviewing material at increasing intervals dramatically improves long-term memory retention"
+  },
+  "metadata": {
+    "title": "Spaced repetition: reviewing material at...",
+    "word_count": 16,
+    "char_count": 108
+  }
+}

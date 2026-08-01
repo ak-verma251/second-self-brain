@@ -212,6 +212,33 @@ class TestCaptureFile:
         assert 'print("hello world")' in result["content"]["file_content"]
         assert result["metadata"]["file_extension"] == ".py"
 
+    def test_capture_file_pdf(self, isolated_raw_dir, tmp_path):
+        """PDF text extraction should populate file_content with extracted text."""
+        from secondself.capture import capture_file
+        from unittest.mock import patch, MagicMock
+
+        # Build a mock pymupdf document that returns known text
+        mock_page = MagicMock()
+        mock_page.get_text.return_value = "PDF extracted text content from page one"
+
+        mock_doc = MagicMock()
+        mock_doc.__len__ = MagicMock(return_value=1)
+        mock_doc.__getitem__ = MagicMock(return_value=mock_page)
+
+        # Write a minimal fake PDF file (just needs the right extension)
+        test_file = tmp_path / "document.pdf"
+        test_file.write_bytes(b"%PDF-1.4 fake pdf bytes")
+
+        # pymupdf is now a top-level import in capture.py, so we patch
+        # secondself.capture.pymupdf.open (not the global pymupdf.open)
+        with patch("secondself.capture.pymupdf.open", return_value=mock_doc):
+            result = capture_file(str(test_file))
+
+        assert result["type"] == "file"
+        assert result["metadata"]["extraction_method"] == "pdf"
+        assert result["metadata"]["file_extension"] == ".pdf"
+        assert "PDF extracted text content" in result["content"]["file_content"]
+
 
 # ─── Test list_captures ──────────────────────────────────────────────
 

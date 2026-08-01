@@ -4,12 +4,18 @@ SecondSelf — Central Configuration
 All shared paths, constants, and settings used across the application.
 """
 
+import os
 from pathlib import Path
 
 # ─── Paths ───────────────────────────────────────────────────────────
 # PROJECT_ROOT resolves to the top-level project directory.
 # __file__ is src/secondself/config.py → .parent.parent.parent = project root
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+# The SECONDSELF_ROOT env-var allows cloud deployments (e.g. Streamlit Cloud)
+# to override the root when the file layout differs from local development.
+PROJECT_ROOT = Path(os.environ.get(
+    "SECONDSELF_ROOT",
+    Path(__file__).resolve().parent.parent.parent,
+))
 
 RAW_DIR = PROJECT_ROOT / "raw"
 WIKI_DIR = PROJECT_ROOT / "wiki"
@@ -27,13 +33,13 @@ EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 EMBEDDING_DIM = 384
 
 # ─── Linking ─────────────────────────────────────────────────────────
-SIMILARITY_THRESHOLD = 0.65
+SIMILARITY_THRESHOLD = 0.40
 MAX_LINKS_PER_NOTE = 5
 TOP_K_RETRIEVAL = 5
 
 # ─── LLM ─────────────────────────────────────────────────────────────
 LLM_PROVIDER = "groq"
-LLM_MODEL = "llama3-70b-8192"
+LLM_MODEL = "llama-3.3-70b-versatile"
 
 # ─── Server ──────────────────────────────────────────────────────────
 HOST = "0.0.0.0"

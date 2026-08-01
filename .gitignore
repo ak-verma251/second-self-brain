@@ -1,5 +1,6 @@
-# Environment
+# Environment & Secrets
 .env
+.streamlit/secrets.toml
 
 # Python
 __pycache__/
@@ -37,7 +38,9 @@ Thumbs.db
 htmlcov/
 
 # Personal Data (Captures & Notes)
-raw/*.json
-wiki/**/*.md
-data/*.json
+# Un-ignored for Streamlit Cloud deployment — data needs to be in the repo.
+# Re-enable the lines below if you want to keep data out of git.
+# raw/*.json
+# wiki/**/*.md
+# data/*.json
 how_to_test_data_via_cli.text

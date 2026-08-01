@@ -1,0 +1,14 @@
+{
+  "id": "bb200002-2024-4b70-9de9-second-self02",
+  "timestamp": "2026-07-24T08:10:00.000000+05:30",
+  "type": "note",
+  "source": "cli",
+  "content": {
+    "text": "Vector embeddings are dense numerical representations of text where semantic similarity maps to geometric proximity. The sentence-transformers library (all-MiniLM-L6-v2) produces 384-dimensional unit-norm vectors. ChromaDB stores these vectors and supports fast approximate nearest-neighbour search using cosine distance, making it ideal for semantic search and auto-linking in a personal knowledge base."
+  },
+  "metadata": {
+    "title": "Vector Embeddings and ChromaDB",
+    "word_count": 60,
+    "char_count": 395
+  }
+}

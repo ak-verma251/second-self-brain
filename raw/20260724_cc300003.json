@@ -1,0 +1,16 @@
+{
+  "id": "cc300003-2024-4b70-9de9-second-self03",
+  "timestamp": "2026-07-24T08:20:00.000000+05:30",
+  "type": "url",
+  "source": "cli",
+  "content": {
+    "text": "Building a Second Brain: A Proven Method to Organize Your Digital Life and Unlock Your Creative Potential — Tiago Forte describes the CODE method (Capture, Organise, Distil, Express) and the PARA system (Projects, Areas, Resources, Archives) as the backbone of a personal knowledge management system. The book argues that externalising knowledge into a trusted system frees mental RAM for creative thinking.",
+    "url": "https://www.buildingasecondbrain.com/"
+  },
+  "metadata": {
+    "title": "Building a Second Brain — Tiago Forte",
+    "word_count": 66,
+    "char_count": 412,
+    "fetch_failed": false
+  }
+}

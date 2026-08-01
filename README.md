@@ -57,9 +57,27 @@ secondself search "machine learning"
 # Ask questions
 secondself ask "What do I know about transformers?"
 
-# Launch web UI
+# Launch web UI (FastAPI)
 secondself serve
+
+# Launch web UI (Streamlit — recommended)
+uv run streamlit run streamlit_app.py
 ```
+
+## 🚀 Deploy on Streamlit Cloud
+
+This project is ready to deploy on [Streamlit Community Cloud](https://share.streamlit.io) (free):
+
+1. Push this repo to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io) → **New app**
+3. Select your repo and set **Main file:** `streamlit_app.py`
+4. Under **Advanced settings → Secrets**, add:
+   ```toml
+   GROQ_API_KEY = "your_groq_api_key"
+   ```
+5. Click **Deploy** — your brain goes live! 🧠
+
+> The app auto-populates ChromaDB from your wiki notes on first launch, so the knowledge graph and Ask features work immediately.
 
 ## Architecture
 
@@ -78,7 +96,8 @@ secondself/
 ├── data/              # ChromaDB vectors + graph JSON
 ├── src/secondself/    # Python source code
 ├── web/               # Static frontend (HTML/CSS/JS)
-└── tests/             # Test suite
+├── streamlit_app.py   # Streamlit web app (for cloud deploy)
+└── tests/             # Test suite (236 tests)
 ```
 
 ## Tech Stack
@@ -87,12 +106,12 @@ secondself/
 |---|---|
 | Language | Python 3.11+ |
 | CLI | Click |
-| LLM | Groq (Llama 3 70B) |
+| LLM | Groq (Llama 3.3 70B) |
 | Embeddings | sentence-transformers (all-MiniLM-L6-v2) |
 | Vector Store | ChromaDB |
-| Web Backend | FastAPI |
-| Graph Viz | vis-network.js |
-| Frontend | Vanilla HTML/CSS/JS |
+| Web Frontend | **Streamlit** + streamlit-agraph (deployed) |
+| Web Backend | FastAPI (local alternative) |
+| Graph Viz | streamlit-agraph / vis-network.js |
 
 ## License
 
