@@ -1,6 +1,7 @@
-# Install the secondself package itself (uses pyproject.toml + hatchling)
-# --no-cache-dir ensures fresh install on every deploy
---no-cache-dir .
+# Install the secondself package in editable mode so __file__ points to
+# the repo source tree (not site-packages). This fixes path resolution
+# on Streamlit Cloud and avoids stale-cache issues on redeploy.
+-e .
 
 streamlit>=1.35
 streamlit-agraph>=0.0.45
