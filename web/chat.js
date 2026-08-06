@@ -316,6 +316,8 @@ function _buildCaptureModal() {
         <div class="capture-tabs" role="tablist">
           <button class="capture-tab active" data-tab="note" role="tab" aria-selected="true">📝 Note</button>
           <button class="capture-tab"         data-tab="url"  role="tab">🔗 URL</button>
+          <button class="capture-tab"         data-tab="file" role="tab">📄 File</button>
+          <button class="capture-tab"         data-tab="video" role="tab">🎥 Video</button>
         </div>
 
         <!-- Note tab -->
@@ -336,6 +338,34 @@ function _buildCaptureModal() {
             placeholder="https://…"
             aria-label="URL to capture"
           />
+        </div>
+
+        <!-- File tab -->
+        <div class="capture-tab-panel hidden" id="capture-panel-file">
+          <input
+            type="file"
+            id="capture-file-input"
+            aria-label="File to upload"
+            accept=".txt,.md,.pdf,.csv,.json,.py,.js,.png,.jpg,.jpeg,.mp3,.wav,.m4a"
+          />
+        </div>
+
+        <!-- Video tab -->
+        <div class="capture-tab-panel hidden" id="capture-panel-video">
+          <input
+            type="file"
+            id="capture-video-input"
+            aria-label="Video to upload"
+            accept=".mp4,.mov,.avi,.mkv,.webm"
+          />
+          <div id="video-quality-container" style="margin-top: 10px;">
+            <label for="capture-video-quality" style="font-size: 13px; color: var(--text-secondary);">Video Quality:</label>
+            <select id="capture-video-quality" style="background: var(--bg-glass); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 4px; border-radius: 4px; width: 100%; margin-top: 5px;">
+              <option value="original">Original</option>
+              <option value="720p">720p (Compress)</option>
+              <option value="480p">480p (Compress)</option>
+            </select>
+          </div>
         </div>
 
         <div class="capture-modal-footer">
@@ -369,10 +399,12 @@ function _wireCaptureModalTabs(modal) {
       });
 
       // Focus the active field
-      const activeField = modal.querySelector(`#capture-panel-${target} textarea, #capture-panel-${target} input`);
+      const activeField = modal.querySelector(`#capture-panel-${target} textarea, #capture-panel-${target} input[type="text"]`);
       if (activeField) activeField.focus();
     });
   });
+
+  // Video Quality dropdown is now static in the Video tab, so no toggle logic needed.
 }
 
 /** Wire the submit button — POSTs to /api/capture */
@@ -397,8 +429,17 @@ function _wireCaptureModalSubmit(modal) {
       type    = 'url';
     }
 
-    if (!content) {
+    let fileInput = modal.querySelector('#capture-file-input');
+    let videoInput = modal.querySelector('#capture-video-input');
+
+    if (tabName !== 'file' && tabName !== 'video' && !content) {
       _setStatus(status, '⚠ Please enter some content first.', 'warn');
+      return;
+    } else if (tabName === 'file' && (!fileInput.files || fileInput.files.length === 0)) {
+      _setStatus(status, '⚠ Please select a file first.', 'warn');
+      return;
+    } else if (tabName === 'video' && (!videoInput.files || videoInput.files.length === 0)) {
+      _setStatus(status, '⚠ Please select a video first.', 'warn');
       return;
     }
 
@@ -409,11 +450,27 @@ function _wireCaptureModalSubmit(modal) {
     _setStatus(status, 'Capturing…', 'info');
 
     try {
-      const res = await fetch('/api/capture', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ type, content }),
-      });
+      let res;
+      if (tabName === 'file' || tabName === 'video') {
+        const formData = new FormData();
+        const inputToUse = tabName === 'video' ? videoInput : fileInput;
+        formData.append('file', inputToUse.files[0]);
+        if (tabName === 'video') {
+          const qual = modal.querySelector('#capture-video-quality');
+          if (qual) formData.append('quality', qual.value);
+        }
+        
+        res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+      } else {
+        res = await fetch('/api/capture', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ type, content }),
+        });
+      }
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: res.statusText }));
@@ -654,12 +711,115 @@ function _inlineMarkdown(line) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+//  8. CALCULATOR WIDGET
+// ═══════════════════════════════════════════════════════════════════════════
+function setupCalculator() {
+  const widget = document.getElementById('calculator-widget');
+  const toggleBtn = document.getElementById('btn-calc-toggle');
+  const closeBtn = document.querySelector('.calc-close');
+  
+  if (!widget || !toggleBtn) return;
+  
+  toggleBtn.addEventListener('click', () => widget.classList.toggle('hidden'));
+  closeBtn.addEventListener('click', () => widget.classList.add('hidden'));
+  
+  let currentInput = '0';
+  let history = '';
+  let lastOperator = null;
+  let previousValue = null;
+  let shouldResetScreen = false;
+  
+  const currentEl = document.getElementById('calc-current');
+  const historyEl = document.getElementById('calc-history');
+  
+  const updateDisplay = () => {
+    if (currentEl) currentEl.textContent = currentInput;
+    if (historyEl) historyEl.textContent = history;
+  };
+  
+  const calculate = (a, b, op) => {
+    a = parseFloat(a); b = parseFloat(b);
+    if (isNaN(a) || isNaN(b)) return b;
+    switch (op) {
+      case '+': return a + b;
+      case '-': return a - b;
+      case '*': return a * b;
+      case '/': return b === 0 ? 'Error' : a / b;
+      default: return b;
+    }
+  };
+  
+  widget.querySelectorAll('.calc-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = btn.dataset.val;
+      
+      if (val === 'C') {
+        currentInput = '0'; history = ''; previousValue = null; lastOperator = null;
+      } else if (val === 'DEL') {
+        if (!shouldResetScreen) {
+          currentInput = currentInput.slice(0, -1) || '0';
+        }
+      } else if (['+', '-', '*', '/'].includes(val)) {
+        if (lastOperator && !shouldResetScreen) {
+          currentInput = String(calculate(previousValue, currentInput, lastOperator));
+        }
+        previousValue = currentInput;
+        lastOperator = val;
+        history = `${previousValue} ${val}`;
+        shouldResetScreen = true;
+      } else if (val === '=') {
+        if (lastOperator) {
+          history = `${previousValue} ${lastOperator} ${currentInput} =`;
+          currentInput = String(calculate(previousValue, currentInput, lastOperator));
+          lastOperator = null;
+          shouldResetScreen = true;
+        }
+      } else if (val) {
+        if (shouldResetScreen) {
+          currentInput = val;
+          shouldResetScreen = false;
+        } else {
+          if (val === '.' && currentInput.includes('.')) return;
+          currentInput = currentInput === '0' && val !== '.' ? val : currentInput + val;
+        }
+      }
+      updateDisplay();
+    });
+  });
+  
+  // Capture Result
+  const captureBtn = document.getElementById('btn-calc-capture');
+  if (captureBtn) {
+    captureBtn.addEventListener('click', async () => {
+      const text = `Calculation: ${history}\nResult: ${currentInput}`;
+      try {
+        captureBtn.disabled = true;
+        captureBtn.textContent = '...';
+        const res = await fetch('/api/capture', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'note', content: text }),
+        });
+        if (res.ok) {
+          if (typeof loadGraph === 'function') loadGraph();
+          widget.classList.add('hidden');
+        }
+      } finally {
+        captureBtn.disabled = false;
+        captureBtn.textContent = '✦ Capture Result';
+      }
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════════════════════
 
 document.addEventListener('DOMContentLoaded', () => {
   setupAskBar();
   setupCaptureModal();
+  setupCalculator();
   adjustLayout();
 
   // Re-measure layout whenever the window is resized

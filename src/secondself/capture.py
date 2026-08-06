@@ -174,6 +174,59 @@ def capture_url(url: str) -> dict:
     return capture
 
 
+def _extract_image_text(path: Path) -> str:
+    """Extract text from an image using easyocr."""
+    try:
+        import easyocr
+        # Disable verbose logging
+        reader = easyocr.Reader(['en'], verbose=False)
+        result = reader.readtext(str(path), detail=0)
+        return " ".join(result)
+    except ImportError:
+        return "[Image OCR failed: easyocr not installed or missing dependencies. Run 'pip install easyocr']"
+    except Exception as e:
+        return f"[Image OCR failed: {e}]"
+
+def _extract_audio_text(path: Path) -> str:
+    """Transcribe audio using whisper."""
+    try:
+        import whisper
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            model = whisper.load_model("base")
+            result = model.transcribe(str(path))
+            return result["text"]
+    except Exception as e:
+        return f"[Audio transcription failed: {e}]"
+
+def _extract_video_text(path: Path) -> str:
+    """Extract audio from video and transcribe it."""
+    try:
+        try:
+            from moviepy import VideoFileClip
+        except ImportError:
+            from moviepy.editor import VideoFileClip
+        import tempfile
+        import os
+        
+        video = VideoFileClip(str(path))
+        if video.audio is None:
+            return "[No audio track found in video]"
+            
+        fd, temp_audio_path = tempfile.mkstemp(suffix=".wav")
+        os.close(fd)
+        
+        try:
+            video.audio.write_audiofile(temp_audio_path, logger=None, verbose=False)
+            return _extract_audio_text(Path(temp_audio_path))
+        finally:
+            if os.path.exists(temp_audio_path):
+                os.remove(temp_audio_path)
+    except Exception as e:
+        return f"[Video extraction failed: {e}]"
+
+
 def capture_file(file_path: str) -> dict:
     """Capture a file with extracted text content.
 
@@ -212,12 +265,17 @@ def capture_file(file_path: str) -> dict:
                 extraction_method = "failed"
 
     elif suffix == ".pdf":
-        # Extract text from PDF using pymupdf
+        # Extract text from PDF using pymupdf/fitz
         try:
-            doc = pymupdf.open(str(path))
+            try:
+                import fitz as pdf_lib
+            except ImportError:
+                import pymupdf as pdf_lib
+                
+            doc = pdf_lib.open(str(path))
             pages = []
-            # Limit to first 50 pages for large PDFs
-            max_pages = min(len(doc), 50)
+            doc_length = len(doc)
+            max_pages = min(doc_length, 50)
             for page_num in range(max_pages):
                 page_text = doc[page_num].get_text()
                 if page_text.strip():
@@ -226,11 +284,29 @@ def capture_file(file_path: str) -> dict:
 
             file_content = "\n\n".join(pages)
             extraction_method = "pdf"
-            if len(doc) > 50:
-                file_content += f"\n\n[... truncated, showing {max_pages} of {len(doc)} pages]"
+            if doc_length > 50:
+                file_content += f"\n\n[... truncated, showing {max_pages} of {doc_length} pages]"
+        except ImportError:
+            file_content = "[PDF extraction failed: PyMuPDF not installed. Run 'pip install pymupdf']"
+            extraction_method = "failed"
         except Exception as e:
             file_content = f"[PDF extraction failed: {e}]"
             extraction_method = "failed"
+
+    elif suffix in {".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".webp", ".gif", ".ico", ".svg"}:
+        console.print(f"  [dim]Running OCR on {path.name}...[/dim]")
+        file_content = _extract_image_text(path)
+        extraction_method = "image-ocr"
+
+    elif suffix in {".mp3", ".wav", ".m4a", ".flac", ".ogg", ".aac"}:
+        console.print(f"  [dim]Transcribing audio {path.name}...[/dim]")
+        file_content = _extract_audio_text(path)
+        extraction_method = "audio-whisper"
+
+    elif suffix in {".mp4", ".mov", ".avi", ".mkv", ".webm"}:
+        console.print(f"  [dim]Extracting audio from video {path.name}...[/dim]")
+        file_content = _extract_video_text(path)
+        extraction_method = "video-whisper"
 
     else:
         # Binary or unsupported file

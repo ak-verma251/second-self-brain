@@ -30,14 +30,14 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from secondself.config import (
-    GRAPH_JSON, PARA_CATEGORIES, RAW_DIR, WIKI_DIR, WEB_DIR,
+    GRAPH_JSON, PARA_CATEGORIES, RAW_DIR, WIKI_DIR, WEB_DIR, MEDIA_DIR, MEMORY_DIR,
 )
 from secondself.graph_builder import build_graph, export_graph
 
@@ -110,6 +110,11 @@ class AskRequest(BaseModel):
     question: str
 
 
+class TranslateRequest(BaseModel):
+    note_id: str
+    target_language: str
+
+
 class CaptureRequest(BaseModel):
     type: str     # "note" | "url" | "file"
     content: str  # the text, URL, or file path
@@ -141,6 +146,8 @@ app.add_middleware(
 # ─── Static files ─────────────────────────────────────────────────────────────
 
 app.mount("/static", StaticFiles(directory=str(WEB_DIR)), name="static")
+app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
+app.mount("/memory", StaticFiles(directory=str(MEMORY_DIR)), name="memory")
 
 
 # ─── Root — SPA shell ─────────────────────────────────────────────────────────
@@ -277,6 +284,77 @@ async def api_ask(req: AskRequest):
         raise HTTPException(status_code=500, detail=str(exc))
 
 
+# ─── API: Translate ───────────────────────────────────────────────────────────
+
+@app.post("/api/translate")
+async def api_translate(req: TranslateRequest):
+    """
+    Translate a note's content into a target language using the LLM.
+    """
+    if not req.note_id or not req.target_language:
+        raise HTTPException(status_code=400, detail="note_id and target_language are required")
+
+    try:
+        from dotenv import load_dotenv
+        from groq import Groq
+        import os
+        
+        load_dotenv()
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise ValueError("GROQ_API_KEY not found in environment.")
+            
+        client = Groq(api_key=api_key)
+        
+        # 1. Read note content
+        # We need to find the note file in the wiki directory
+        note_file = None
+        for f in WIKI_DIR.rglob("*.md"):
+            if f.is_file():
+                content = f.read_text(encoding="utf-8")
+                if f"id: {req.note_id}" in content:
+                    note_file = f
+                    break
+                    
+        if not note_file:
+            raise HTTPException(status_code=404, detail=f"Note {req.note_id} not found")
+            
+        content = note_file.read_text(encoding="utf-8")
+        
+        # Extract body (strip frontmatter)
+        parts = content.split("---")
+        if len(parts) >= 3:
+            body = "---".join(parts[2:]).strip()
+        else:
+            body = content.strip()
+
+        # 2. Call LLM
+        prompt = f"""You are a professional translator. 
+Translate the following text into {req.target_language}.
+Maintain the original markdown formatting and structure.
+Do not add any conversational filler, just return the translated text.
+
+TEXT TO TRANSLATE:
+{body}"""
+
+        completion = client.chat.completions.create(
+            model=os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile"),
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=4000,
+        )
+        
+        translated_text = completion.choices[0].message.content.strip()
+
+        return JSONResponse(content={
+            "status": "ok",
+            "translated_text": translated_text
+        })
+
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
 # ─── API: Capture ─────────────────────────────────────────────────────────────
 
 @app.post("/api/capture")
@@ -359,6 +437,219 @@ async def api_capture(req: CaptureRequest):
         raise
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+# ─── API: Upload ──────────────────────────────────────────────────────────────
+
+@app.post("/api/upload")
+async def api_upload(
+    file: UploadFile = File(...),
+    quality: str = Form("original")
+):
+    """
+    Capture a file upload from the web UI.
+    
+    Saves the file temporarily, calls `capture_file`, and runs the full pipeline.
+    """
+    import tempfile
+    import shutil
+    import os
+
+    try:
+        from secondself.capture import capture_file
+        from secondself.classify import classify_capture
+        from secondself.linker import find_related, update_backlinks
+        from secondself.wiki_writer import write_wiki_note
+
+        # 1. Save uploaded file to a temporary location
+        suffix = ""
+        if file.filename:
+            _, suffix = os.path.splitext(file.filename)
+            
+        fd, temp_path = tempfile.mkstemp(suffix=suffix)
+        os.close(fd)
+        
+        final_video_filename = None
+        
+        try:
+            with open(temp_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+
+            # --- Video Processing ---
+            is_video = suffix.lower() in {".mp4", ".mov", ".avi", ".mkv", ".webm"}
+            if is_video:
+                import uuid
+                final_video_filename = f"{uuid.uuid4().hex[:8]}{suffix}"
+                final_video_path = MEMORY_DIR / final_video_filename
+                
+                if quality in ["720p", "480p"]:
+                    try:
+                        from moviepy import VideoFileClip
+                    except ImportError:
+                        from moviepy.editor import VideoFileClip
+                    try:
+                        clip = VideoFileClip(temp_path)
+                        target_height = 720 if quality == "720p" else 480
+                        if clip.h > target_height:
+                            clip = clip.resize(height=target_height)
+                        clip.write_videofile(str(final_video_path), logger=None, verbose=False)
+                    except Exception as e:
+                        # Fallback to copy
+                        shutil.copy2(temp_path, final_video_path)
+                else:
+                    # original quality
+                    shutil.copy2(temp_path, final_video_path)
+
+            # 2. Capture the file
+            capture = capture_file(temp_path)
+            
+            # Use the original filename instead of the temp filename
+            if file.filename:
+                capture["metadata"]["original_filename"] = file.filename
+                capture["metadata"]["title"] = Path(file.filename).stem.replace("-", " ").replace("_", " ").title()
+                
+            if final_video_filename:
+                capture["metadata"]["video_filename"] = final_video_filename
+
+        finally:
+            # Clean up the temp file
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+        # 3. Classify
+        engine = _get_engine()
+        classification = classify_capture(capture)
+        
+        # We also want to override the suggested title with the filename title if it makes sense, 
+        # but the classifier will likely do a good job based on the content anyway.
+
+        # 4. Embed + store in ChromaDB
+        content_text = _extract_text(capture)
+        engine.store(
+            capture_id=capture["id"],
+            text=content_text,
+            metadata={
+                "title": classification.suggested_title,
+                "category": classification.category,
+                "tags": json.dumps(classification.tags),
+                "timestamp": capture.get("timestamp", ""),
+            },
+        )
+
+        # 5. Find related notes
+        try:
+            related = find_related(capture["id"], engine)
+        except (ValueError, Exception):
+            related = []
+
+        # 6. Write wiki note
+        wiki_path = write_wiki_note(capture, classification, related)
+
+        # 7. Update backlinks
+        if related:
+            update_backlinks(
+                wiki_dir=WIKI_DIR,
+                source_title=classification.suggested_title,
+                related=related,
+            )
+
+        # 8. Invalidate graph cache
+        _invalidate_graph_cache()
+
+        return JSONResponse(content={
+            "id": capture["id"],
+            "status": "processed",
+            "category": classification.category,
+            "title": classification.suggested_title,
+            "wiki_path": str(wiki_path.relative_to(WIKI_DIR)),
+            "tags": classification.tags,
+        })
+
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+# ─── API: Upload Video (Simple — Gallery only) ────────────────────────────────
+
+@app.post("/api/upload-video")
+async def api_upload_video(
+    file: UploadFile = File(...),
+):
+    """
+    Simple video upload for the Video Gallery.
+
+    Saves the video directly to data/Memory/ without any processing,
+    graph node creation, or embedding. The video is immediately available
+    in the gallery via GET /api/videos.
+    """
+    import uuid
+    import os
+    import shutil
+
+    suffix = ""
+    if file.filename:
+        _, suffix = os.path.splitext(file.filename)
+
+    allowed = {".mp4", ".mov", ".avi", ".mkv", ".webm"}
+    if suffix.lower() not in allowed:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type '{suffix}'. Allowed: {', '.join(allowed)}",
+        )
+
+    try:
+        video_id = uuid.uuid4().hex[:8]
+        # Preserve original name for display, but prefix with id to avoid collisions
+        safe_name = file.filename.replace(" ", "_") if file.filename else f"video{suffix}"
+        final_name = f"{video_id}_{safe_name}"
+        final_path = MEMORY_DIR / final_name
+
+        with open(final_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        return JSONResponse(content={
+            "status": "ok",
+            "filename": final_name,
+            "original_name": file.filename or safe_name,
+        })
+
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.get("/api/videos")
+async def api_videos():
+    """
+    List all video files stored in data/Memory/.
+
+    Returns a JSON array of video objects with filename, original_name,
+    and size_mb. Used by the Video Gallery to render the grid.
+    """
+    import os
+
+    allowed = {".mp4", ".mov", ".avi", ".mkv", ".webm"}
+    videos = []
+
+    if MEMORY_DIR.exists():
+        for f in sorted(MEMORY_DIR.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
+            if f.is_file() and f.suffix.lower() in allowed:
+                stat = f.stat()
+                # Try to recover a nice display name from the filename
+                # Format is: <8-hex-id>_<original_name>
+                name = f.name
+                display_name = name
+                if len(name) > 9 and name[8] == "_":
+                    display_name = name[9:]  # strip the uuid prefix
+                display_name = Path(display_name).stem.replace("_", " ").replace("-", " ")
+
+                videos.append({
+                    "filename": f.name,
+                    "display_name": display_name,
+                    "size_mb": round(stat.st_size / (1024 * 1024), 1),
+                    "modified": stat.st_mtime,
+                })
+
+    return JSONResponse(content={"videos": videos})
 
 
 # ─── API: Process (batch) ─────────────────────────────────────────────────────

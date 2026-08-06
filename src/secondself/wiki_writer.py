@@ -70,6 +70,13 @@ def write_wiki_note(
 
     # 2. Build YAML frontmatter.
     tags_yaml = _format_tags_yaml(tags)
+    # Extract extra metadata
+    extra_meta = ""
+    if "video_filename" in capture.get("metadata", {}):
+        extra_meta += f"video_filename: {capture['metadata']['video_filename']}\n"
+    if "original_filename" in capture.get("metadata", {}):
+        extra_meta += f"original_filename: \"{_escape_yaml_string(capture['metadata']['original_filename'])}\"\n"
+
     frontmatter = (
         "---\n"
         f"id: {capture_id}\n"
@@ -79,6 +86,7 @@ def write_wiki_note(
         f"created: {timestamp}\n"
         f"source: {source}\n"
         f"confidence: {classification.confidence:.2f}\n"
+        f"{extra_meta}"
         "---\n"
     )
 

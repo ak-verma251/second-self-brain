@@ -7,12 +7,15 @@
     <meta name="description"
         content="SecondSelf — Your AI-powered personal knowledge graph. Ask anything about your notes, explore connections, and capture new ideas instantly.">
 
-    <title>SecondSelf — Your AI Second Brain</title>
+    <title>ASHISH'S BRAIN</title>
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css">
@@ -25,7 +28,7 @@
     <header id="app-header" role="banner">
         <div class="logo" aria-label="SecondSelf">
             <span class="logo-icon" aria-hidden="true">🧠</span>
-            <span class="logo-text">ASHISH'S BRaIN</span>
+            <span class="logo-text">ASHISH'S BRAIN</span>
         </div>
 
         <nav class="header-nav" aria-label="Main actions">
@@ -42,6 +45,15 @@
                 </span>
             </div>
 
+            <button id="btn-calc-toggle" class="btn" style="background:var(--bg-glass); border-color:var(--border-glass);" aria-label="Toggle Calculator">
+                <span aria-hidden="true">🧮</span> Calculator
+            </button>
+
+            <!-- Gallery toggle -->
+            <button id="btn-gallery-toggle" class="btn" style="background:var(--bg-glass); border-color:var(--border-glass);" aria-label="Toggle Video Gallery">
+                <span aria-hidden="true">🎥</span> Gallery
+            </button>
+
             <!-- Keyboard hint -->
             <kbd class="kbd-hint" title="Press / to focus the ask bar">/</kbd>
 
@@ -52,13 +64,60 @@
         </nav>
     </header>
 
+    <!-- Floating Calculator Widget -->
+    <div id="calculator-widget" class="calculator-widget hidden">
+        <div class="calc-header">
+            <span>🧮 Calculator</span>
+            <button class="calc-close" aria-label="Close Calculator">&times;</button>
+        </div>
+        <div class="calc-display">
+            <div id="calc-history" class="calc-history"></div>
+            <div id="calc-current" class="calc-current">0</div>
+        </div>
+        <div class="calc-keypad">
+            <button class="calc-btn calc-op" data-val="C">C</button>
+            <button class="calc-btn calc-op" data-val="DEL">⌫</button>
+            <button class="calc-btn calc-op" data-val="/">÷</button>
+            <button class="calc-btn calc-op" data-val="*">×</button>
+            
+            <button class="calc-btn" data-val="7">7</button>
+            <button class="calc-btn" data-val="8">8</button>
+            <button class="calc-btn" data-val="9">9</button>
+            <button class="calc-btn calc-op" data-val="-">−</button>
+            
+            <button class="calc-btn" data-val="4">4</button>
+            <button class="calc-btn" data-val="5">5</button>
+            <button class="calc-btn" data-val="6">6</button>
+            <button class="calc-btn calc-op" data-val="+">+</button>
+            
+            <button class="calc-btn" data-val="1">1</button>
+            <button class="calc-btn" data-val="2">2</button>
+            <button class="calc-btn" data-val="3">3</button>
+            <button class="calc-btn calc-equals" data-val="=" style="grid-row: span 2;">=</button>
+            
+            <button class="calc-btn" data-val="0" style="grid-column: span 2;">0</button>
+            <button class="calc-btn" data-val=".">.</button>
+        </div>
+        <button id="btn-calc-capture" class="btn primary calc-capture-btn">
+            ✦ Capture Result
+        </button>
+    </div>
+
     <!-- ═══════════════════════════════════════════════════
          MAIN — SPLIT PANE  (graph ← → note panel)
          ═══════════════════════════════════════════════════ -->
     <main id="main-content" role="main">
 
+
         <!-- Left: graph canvas -->
         <section id="graph-section" aria-label="Knowledge graph">
+            <div id="graph-filters" class="graph-filters" aria-label="Filter Graph by Category">
+                <span style="color:var(--text-muted); font-size: 13px; font-weight: 500; margin-right: 8px;">Filter:</span>
+                <button class="filter-btn active" data-category="projects">Projects</button>
+                <button class="filter-btn active" data-category="areas">Areas</button>
+                <button class="filter-btn active" data-category="resources">Resources</button>
+                <button class="filter-btn active" data-category="archives">Archives</button>
+            </div>
             <div id="graph-container">
                 <!-- vis-network canvas injected here by graph.js -->
 
@@ -130,9 +189,23 @@
                             <span id="note-category" class="badge hidden"></span>
                             <div id="note-tags" class="tags-container"></div>
                         </div>
+                        <div id="note-translate-controls" style="margin-top: 10px; display: flex; gap: 8px;">
+                            <select id="translate-lang" class="input-field" style="padding: 4px; border-radius: 4px; background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-primary); font-size: 12px;">
+                                <option value="Spanish">Spanish</option>
+                                <option value="French">French</option>
+                                <option value="German">German</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Japanese">Japanese</option>
+                                <option value="Chinese">Chinese</option>
+                                <option value="Russian">Russian</option>
+                                <option value="English">English</option>
+                            </select>
+                            <button id="btn-translate" class="btn secondary" style="padding: 4px 10px; font-size: 12px;">Translate</button>
+                        </div>
                     </header>
 
                     <div class="note-body">
+                        <div id="note-video-container" class="hidden"></div>
                         <div id="note-content-preview"></div>
                     </div>
 
@@ -143,6 +216,17 @@
                 </div>
             </div>
         </aside>
+
+        <!-- Gallery Section (right sidebar, replaces note panel when active) -->
+        <section id="gallery-section" class="hidden" aria-label="Video Gallery">
+            <div class="gallery-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>🎥 Gallery</h2>
+                <button id="btn-gallery-upload" class="btn primary" style="font-size:12px; padding:4px 10px;" aria-label="Upload Video">
+                    <span aria-hidden="true">✦</span> Upload
+                </button>
+            </div>
+            <div id="gallery-grid" class="gallery-grid"></div>
+        </section>
     </main>
 
     <!-- ═══════════════════════════════════════════════════
@@ -168,6 +252,15 @@
     <!-- ═══════════════════════════════════════════════════
          SCRIPTS
          ═══════════════════════════════════════════════════ -->
+    <!-- Video Player Modal -->
+    <div id="video-player-modal" class="hidden">
+        <div class="video-player-overlay"></div>
+        <div class="video-player-container">
+            <button class="video-player-close" aria-label="Close Video">&times;</button>
+            <video id="video-player-element" controls></video>
+        </div>
+    </div>
+
     <!-- vis-network (graph renderer) -->
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 

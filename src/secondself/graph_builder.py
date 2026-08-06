@@ -87,6 +87,7 @@ def parse_wiki_note(file_path: Path) -> dict:
         "created": created,
         "word_count": word_count,
         "links": related_notes,
+        "metadata": fm_data,
     }
 
 

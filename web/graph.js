@@ -87,6 +87,7 @@ async function loadGraph() {
     });
 
     _setupInteractions(_network, data);
+    _setupFilters(data);
     _showGraphStats(graphData.metadata || {});
 
     // Load and render dashboard stats
@@ -102,9 +103,9 @@ async function loadGraph() {
 
 function _transformNodes(rawNodes) {
   const now = Date.now();
+  const total = rawNodes.length;
 
-  return rawNodes.map(node => {
-    const colors   = CATEGORY_COLORS[node.category] || DEFAULT_COLOR;
+  return rawNodes.map((node, index) => {
     const linkCount = node.link_count || 0;
 
     // Size proportional to link_count (min: 14, max: 42)
@@ -115,10 +116,23 @@ function _transformNodes(rawNodes) {
     try { createdMs = node.created ? new Date(node.created).getTime() : 0; } catch (_) {}
     const isRecent = (now - createdMs) < 7 * 24 * 60 * 60 * 1000;
 
+    // Unique color per node using golden-angle hue distribution
+    const hue = (index * 137.508) % 360;  // golden angle for max spread
+    const bg        = `hsl(${hue}, 70%, 55%)`;
+    const border    = `hsl(${hue}, 75%, 65%)`;
+    const hlBg      = `hsl(${hue}, 80%, 65%)`;
+    const hlBorder  = `hsl(${hue}, 85%, 75%)`;
+
+    const colors = {
+      background: bg,
+      border: border,
+      highlight: { background: hlBg, border: hlBorder },
+    };
+
     return {
       id:    node.id,
       label: _truncate(node.label, 22),
-      title: _buildTooltipHTML(node),   // rich hover tooltip (vis internal)
+      title: _buildTooltipHTML(node),
       size,
       color: colors,
       shape: 'dot',
@@ -259,6 +273,51 @@ function _setupInteractions(network, data) {
   network.on('dragStart', () => _removeTooltip());
 }
 
+// ── Graph Filtering ───────────────────────────────────────────────────────
+
+let _activeCategories = new Set(['projects', 'areas', 'resources', 'archives']);
+
+function _setupFilters(data) {
+  const nodesDataset = data.nodes;
+  
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    // Reset state in case graph reloads
+    btn.classList.add('active');
+    
+    // Remove old listeners by cloning (simple way)
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+    
+    newBtn.addEventListener('click', (e) => {
+      const cat = e.target.dataset.category;
+      if (_activeCategories.has(cat)) {
+        _activeCategories.delete(cat);
+        e.target.classList.remove('active');
+      } else {
+        _activeCategories.add(cat);
+        e.target.classList.add('active');
+      }
+      _applyFilters(nodesDataset);
+    });
+  });
+  
+  // Apply immediately in case _activeCategories was modified before reload
+  _applyFilters(nodesDataset);
+}
+
+function _applyFilters(nodesDataset) {
+  const allNodeIds = nodesDataset.getIds();
+  const updates = allNodeIds.map(id => {
+    const node = _nodesMap[id];
+    const cat = (node && node.category) ? node.category : 'resources';
+    return {
+      id: id,
+      hidden: !_activeCategories.has(cat)
+    };
+  });
+  nodesDataset.update(updates);
+}
+
 // ── Edge highlight helpers ────────────────────────────────────────────────
 
 /**
@@ -347,12 +406,76 @@ function showNoteDetail(nodeId) {
   // Content preview
   const preview = document.getElementById('note-content-preview');
   if (preview) {
-    preview.textContent = node.content_preview || node.summary || '';
+    preview.innerHTML = '';
+    // Store original text so we can translate it or reset
+    const originalText = node.content_preview || node.summary || '';
+    
+    const textEl = document.createElement('div');
+    textEl.style.whiteSpace = 'pre-wrap';
+    textEl.textContent = originalText;
+    preview.appendChild(textEl);
+    
     // Word count
     const wc     = document.createElement('small');
     wc.className = 'word-count-hint';
     wc.textContent = node.word_count ? `${node.word_count} words` : '';
+    wc.style.display = 'block';
+    wc.style.marginTop = '10px';
     preview.appendChild(wc);
+
+    // Wire up Translate button
+    const translateBtn = document.getElementById('btn-translate');
+    const translateSelect = document.getElementById('translate-lang');
+    if (translateBtn && translateSelect) {
+      // Remove old event listeners by cloning
+      const newBtn = translateBtn.cloneNode(true);
+      translateBtn.parentNode.replaceChild(newBtn, translateBtn);
+      
+      newBtn.addEventListener('click', async () => {
+        const lang = translateSelect.value;
+        const oldText = newBtn.textContent;
+        newBtn.textContent = 'Translating...';
+        newBtn.disabled = true;
+
+        try {
+          const res = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ note_id: nodeId, target_language: lang })
+          });
+          
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'Translation failed');
+          }
+          
+          const data = await res.json();
+          textEl.textContent = data.translated_text;
+          
+        } catch (e) {
+          alert('Error: ' + e.message);
+        } finally {
+          newBtn.textContent = oldText;
+          newBtn.disabled = false;
+        }
+      });
+    }
+  }
+
+  // Video player
+  const videoContainer = document.getElementById('note-video-container');
+  if (videoContainer) {
+    if (node._raw && node._raw.metadata && node._raw.metadata.video_filename) {
+      const filename = node._raw.metadata.video_filename;
+      videoContainer.innerHTML = `
+        <video controls style="width:100%; border-radius:8px; margin-bottom:10px;" src="/memory/${filename}"></video>
+        <a href="/memory/${filename}" download class="btn" style="display:block; text-align:center; margin-bottom:15px; border-color:var(--border-glass);">Download Video</a>
+      `;
+      videoContainer.classList.remove('hidden');
+    } else {
+      videoContainer.innerHTML = '';
+      videoContainer.classList.add('hidden');
+    }
   }
 
   // Related notes
@@ -570,8 +693,166 @@ function _wireEmptyStateCTA() {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+//  VIDEO GALLERY
+// ═══════════════════════════════════════════════════════════════════════════
+let _galleryActive = false;
+
+function setupVideoGallery() {
+  const toggleBtn = document.getElementById('btn-gallery-toggle');
+  const graphSection = document.getElementById('graph-section');
+  const notePanel = document.getElementById('note-panel');
+  const gallerySection = document.getElementById('gallery-section');
+  
+  if (!toggleBtn || !gallerySection) return;
+  
+  // --- Upload button: simple file picker → POST /api/upload-video ---
+  const uploadBtn = document.getElementById('btn-gallery-upload');
+  if (uploadBtn) {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.mp4,.mov,.avi,.mkv,.webm';
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
+
+    uploadBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', async () => {
+      if (!fileInput.files || fileInput.files.length === 0) return;
+
+      const file = fileInput.files[0];
+      uploadBtn.disabled = true;
+      uploadBtn.textContent = '⏳ Uploading…';
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await fetch('/api/upload-video', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          alert('Upload failed: ' + (err.detail || res.statusText));
+        } else {
+          _renderGallery();
+        }
+      } catch (e) {
+        alert('Upload error: ' + e.message);
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<span aria-hidden="true">✦</span> Upload Video';
+        fileInput.value = '';
+      }
+    });
+  }
+  
+  // --- Toggle gallery view (sidebar, graph stays visible) ---
+  toggleBtn.addEventListener('click', () => {
+    _galleryActive = !_galleryActive;
+    
+    if (_galleryActive) {
+      // Show gallery sidebar, hide note panel, keep graph visible
+      notePanel.classList.add('hidden');
+      gallerySection.classList.remove('hidden');
+      toggleBtn.classList.add('active');
+      toggleBtn.style.borderColor = 'var(--border-glow)';
+      _renderGallery();
+    } else {
+      // Hide gallery, restore note panel
+      gallerySection.classList.add('hidden');
+      notePanel.classList.remove('hidden');
+      toggleBtn.classList.remove('active');
+      toggleBtn.style.borderColor = 'var(--border-glass)';
+    }
+  });
+}
+
+async function _renderGallery() {
+  const grid = document.getElementById('gallery-grid');
+  if (!grid) return;
+  
+  grid.innerHTML = '<div style="color:var(--text-muted); padding:16px; font-size:13px;">Loading…</div>';
+  
+  try {
+    const res = await fetch('/api/videos');
+    const data = await res.json();
+    const videos = data.videos || [];
+
+    grid.innerHTML = '';
+
+    if (videos.length === 0) {
+      grid.innerHTML = `<div style="color:var(--text-muted); font-size: 13px; padding: 16px;">
+        No videos yet. Click <strong>✦ Upload Video</strong> above to add one.
+      </div>`;
+      return;
+    }
+
+    videos.forEach(video => {
+      const card = document.createElement('div');
+      card.className = 'video-card';
+      card.innerHTML = `
+        <div class="video-card-thumbnail">
+          <div class="play-overlay">
+            <span style="font-size:16px; color:#a78bfa;">▶</span>
+          </div>
+        </div>
+        <div class="video-card-title" title="${video.display_name}">${video.display_name}</div>
+        <div class="video-card-meta">
+          <span>${video.size_mb} MB</span>
+          <span>${new Date(video.modified * 1000).toLocaleDateString()}</span>
+        </div>
+      `;
+      
+      // Clicking anywhere on the row opens the modal
+      card.addEventListener('click', () => {
+        const modal = document.getElementById('video-player-modal');
+        const videoEl = document.getElementById('video-player-element');
+        if (modal && videoEl) {
+          videoEl.src = `/memory/${video.filename}`;
+          modal.classList.remove('hidden');
+          videoEl.play();
+        }
+      });
+      
+      grid.appendChild(card);
+    });
+
+  } catch (e) {
+    grid.innerHTML = `<div style="color:#f87171; padding:16px;">Failed to load videos: ${e.message}</div>`;
+  }
+}
+
+
+function _setupVideoModal() {
+  const modal = document.getElementById('video-player-modal');
+  const closeBtn = document.querySelector('.video-player-close');
+  const overlay = document.querySelector('.video-player-overlay');
+  const videoEl = document.getElementById('video-player-element');
+
+  if (!modal || !videoEl) return;
+
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    videoEl.pause();
+    videoEl.src = '';
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (overlay) overlay.addEventListener('click', closeModal);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+      closeModal();
+    }
+  });
+}
+
 // ── Initialise on DOM load ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   loadGraph();
   _wireEmptyStateCTA();
+  setupVideoGallery();
+  _setupVideoModal();
 });

@@ -183,7 +183,7 @@ class TestCaptureFile:
         assert result["type"] == "file"
         assert "# My Notes" in result["content"]["file_content"]
 
-    def test_handles_binary_file(self, isolated_raw_dir, tmp_path):
+    def test_handles_image_file(self, isolated_raw_dir, tmp_path):
         from secondself.capture import capture_file
 
         test_file = tmp_path / "image.png"
@@ -192,7 +192,7 @@ class TestCaptureFile:
         result = capture_file(str(test_file))
 
         assert result["type"] == "file"
-        assert result["metadata"]["extraction_method"] == "binary"
+        assert result["metadata"]["extraction_method"] == "image-ocr"
 
     def test_file_not_found_raises(self, isolated_raw_dir):
         from secondself.capture import capture_file

@@ -49,6 +49,8 @@ CHROMA_DIR = DATA_DIR / "chroma"
 GRAPH_JSON = DATA_DIR / "graph.json"
 INDEX_JSON = DATA_DIR / "index.json"
 WEB_DIR = PROJECT_ROOT / "web"
+MEDIA_DIR = DATA_DIR / "media"
+MEMORY_DIR = DATA_DIR / "Memory"
 
 # ─── PARA Categories ────────────────────────────────────────────────
 PARA_CATEGORIES = ["projects", "areas", "resources", "archives"]
@@ -82,6 +84,8 @@ def ensure_dirs() -> None:
         DATA_DIR,
         CHROMA_DIR,
         WEB_DIR,
+        MEDIA_DIR,
+        MEMORY_DIR,
     ]
     # Add PARA wiki subdirectories
     for category in PARA_CATEGORIES:
