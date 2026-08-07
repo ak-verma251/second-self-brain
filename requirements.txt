@@ -1,7 +1,7 @@
-# Install the secondself package in editable mode so __file__ points to
-# the repo source tree (not site-packages). This fixes path resolution
-# on Streamlit Cloud and avoids stale-cache issues on redeploy.
--e .
+# Install the secondself package so imports resolve correctly.
+# On Streamlit Cloud, CWD is the cloned repo root, so config.py's
+# _resolve_project_root() falls back to CWD for data directories.
+.
 
 streamlit>=1.35
 streamlit-agraph>=0.0.45

@@ -18,6 +18,11 @@ dependencies = [
     "rich>=13.0",
     "streamlit>=1.35",
     "streamlit-agraph>=0.0.45",
+]
+
+[project.optional-dependencies]
+# Heavy ML deps — only needed for CLI file capture (OCR, audio, video)
+media = [
     "openai-whisper>=20231117",
     "easyocr>=1.7",
     "moviepy>=1.0.3",
