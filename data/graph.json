@@ -111,6 +111,32 @@
       "link_count": 0
     },
     {
+      "id": "b5b9f019-9508-473f-85c0-0c82dff28fbf",
+      "label": "India News Roundup",
+      "category": "resources",
+      "tags": [
+        "cricket",
+        "india",
+        "news",
+        "health"
+      ],
+      "summary": "India news updates on cricket, health, and politics",
+      "content_preview": "CRICKET CANADA NEWS INDIA India's spin homework: sweep Canadian intelligence report Felt like it' :\nPanic after more, use your feet; or repeat the names key members of Bishnoi passenger smashes\nemerge...",
+      "created": "2026-08-07T14:38:15.938671+05:30",
+      "word_count": 120,
+      "metadata": {
+        "id": "b5b9f019-9508-473f-85c0-0c82dff28fbf",
+        "title": "India News Roundup",
+        "category": "resources",
+        "tags": "[\"cricket\", \"india\", \"news\", \"health\"]",
+        "created": "2026-08-07T14:38:15.938671+05:30",
+        "source": "C:\\Users\\akv11\\AppData\\Local\\Temp\\tmply88gdf2.png",
+        "confidence": "0.80",
+        "original_filename": "Screenshot 2026-08-07 003721.png"
+      },
+      "link_count": 2
+    },
+    {
       "id": "98556000-4136-4f85-8227-f8d8474746e0",
       "label": "India News Roundup",
       "category": "resources",
@@ -213,6 +239,30 @@
       "link_count": 1
     },
     {
+      "id": "f3e6353e-ea92-4bd3-bc1b-629634e2c13b",
+      "label": "Introduction to Descriptive Statistics",
+      "category": "resources",
+      "tags": [
+        "machine learning",
+        "data analysis",
+        "statistics"
+      ],
+      "summary": "Descriptive statistics for data analysis",
+      "content_preview": "Descriptive statistics helps us understand and summarize datasets before applying machine learning\nmodels. It includes measures of central tendency, dispersion, distribution shape, and frequency to\nan...",
+      "created": "2026-08-07T14:36:44.484305+05:30",
+      "word_count": 28,
+      "metadata": {
+        "id": "f3e6353e-ea92-4bd3-bc1b-629634e2c13b",
+        "title": "Introduction to Descriptive Statistics",
+        "category": "resources",
+        "tags": "[\"machine learning\", \"data analysis\", \"statistics\"]",
+        "created": "2026-08-07T14:36:44.484305+05:30",
+        "source": "cli",
+        "confidence": "0.98"
+      },
+      "link_count": 0
+    },
+    {
       "id": "85c7b753-83b2-4bb1-b813-e8ae8cbb391e",
       "label": "Krishna in Hindu Mythology",
       "category": "resources",
@@ -286,6 +336,30 @@
         "confidence": "0.98"
       },
       "link_count": 2
+    },
+    {
+      "id": "e9fe5830-d095-4b7a-a2e7-611040b67aeb",
+      "label": "Polite Response to Casual Greeting",
+      "category": "resources",
+      "tags": [
+        "communication",
+        "social skills",
+        "etiquette"
+      ],
+      "summary": "Responding to 'how are you' with a helpful tone",
+      "content_preview": "when someone ask how are you  replied \"I am fine , how can i help you \"",
+      "created": "2026-08-07T14:35:45.130432+05:30",
+      "word_count": 17,
+      "metadata": {
+        "id": "e9fe5830-d095-4b7a-a2e7-611040b67aeb",
+        "title": "Polite Response to Casual Greeting",
+        "category": "resources",
+        "tags": "[\"communication\", \"social skills\", \"etiquette\"]",
+        "created": "2026-08-07T14:35:45.130432+05:30",
+        "source": "cli",
+        "confidence": "0.80"
+      },
+      "link_count": 0
     },
     {
       "id": "aa100001-2024-4b70-9de9-second-self01",
@@ -390,6 +464,14 @@
       "to": "be2dc47b-d8ac-43c5-9aaa-154c3dbf7b8f"
     },
     {
+      "from": "b5b9f019-9508-473f-85c0-0c82dff28fbf",
+      "to": "98556000-4136-4f85-8227-f8d8474746e0"
+    },
+    {
+      "from": "b5b9f019-9508-473f-85c0-0c82dff28fbf",
+      "to": "1f946979-37e0-4568-bcd8-a160d15e56dd"
+    },
+    {
       "from": "98556000-4136-4f85-8227-f8d8474746e0",
       "to": "1f946979-37e0-4568-bcd8-a160d15e56dd"
     },
@@ -447,13 +529,13 @@
     }
   ],
   "metadata": {
-    "total_nodes": 16,
-    "total_edges": 15,
+    "total_nodes": 19,
+    "total_edges": 17,
     "category_counts": {
-      "resources": 13,
+      "resources": 16,
       "archives": 2,
       "areas": 1
     },
-    "generated_at": "2026-08-06T20:02:45.778522+00:00"
+    "generated_at": "2026-08-07T09:09:08.540010+00:00"
   }
 }

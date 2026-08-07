@@ -776,26 +776,63 @@ body {
   width: 100%;
 }
 
+/* ── Rainbow border animation for ask-input ──────────────────────────── */
+@property --rainbow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rainbowSpin {
+  to { --rainbow-angle: 360deg; }
+}
+
+@keyframes rainbowGlowPulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
 #ask-input {
   flex: 1;
   height: 42px;
   padding: 0 14px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-glass);
+  border: 2px solid var(--border-glass);
   background: var(--bg-glass);
   color: var(--text-primary);
   font-family: var(--font-family);
   font-size: 14px;
   outline: none;
-  transition: all var(--transition);
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
 #ask-input::placeholder { color: var(--text-muted); }
 
+/* ── Activate rainbow on hover or focus ──────────────────────────────── */
+#ask-input:hover,
 #ask-input:focus {
-  border-color: var(--border-glow);
-  background: var(--bg-glass-hover);
-  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+  border-color: transparent;
+  background:
+    linear-gradient(var(--bg-glass-hover), var(--bg-glass-hover)) padding-box,
+    conic-gradient(
+      from var(--rainbow-angle),
+      #ff0000, #ff8800, #ffff00, #00ff00,
+      #00ccff, #0044ff, #8800ff, #ff0088, #ff0000
+    ) border-box;
+  animation: rainbowSpin 2.5s linear infinite;
+  box-shadow:
+    0 0 8px  rgba(255, 0, 128, 0.3),
+    0 0 16px rgba(0, 200, 255, 0.2),
+    0 0 24px rgba(136, 0, 255, 0.15);
+}
+
+/* Glow pulse overlay via box-shadow on focus for extra pop */
+#ask-input:focus {
+  box-shadow:
+    0 0 8px  rgba(255, 0, 128, 0.45),
+    0 0 18px rgba(0, 200, 255, 0.35),
+    0 0 30px rgba(136, 0, 255, 0.25),
+    0 0 42px rgba(255, 136, 0, 0.12);
 }
 
 /* Ask button */
